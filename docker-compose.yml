@@ -1,0 +1,96 @@
+# https://github.com/Joxit/docker-registry-ui?tab=readme-ov-file#recommended-docker-registry-usage
+
+services:
+  reg-ui:
+    image: joxit/docker-registry-ui:main
+    restart: always
+    ports:
+      - 5050:80
+    environment:
+      - SINGLE_REGISTRY=false
+      - REGISTRY_TITLE=Docker Registry UI
+      - DELETE_IMAGES=true
+      - SHOW_CONTENT_DIGEST=true
+      - SHOW_CATALOG_NB_TAGS=true
+      - CATALOG_MIN_BRANCHES=1
+      - CATALOG_MAX_BRANCHES=1
+      - TAGLIST_PAGE_SIZE=100
+      - REGISTRY_SECURED=false
+      - CATALOG_ELEMENTS_LIMIT=1000
+    container_name: reg-ui
+
+  reg-local:
+    image: registry:2
+    restart: always
+    environment:
+    # https://reg-ui.docker-registry-ui.orb.local
+      REGISTRY_HTTP_HEADERS_Access-Control-Allow-Origin: '[http://localhost:5050]'
+      REGISTRY_HTTP_HEADERS_Access-Control-Allow-Methods: '[HEAD,GET,OPTIONS,DELETE]'
+      REGISTRY_HTTP_HEADERS_Access-Control-Allow-Credentials: '[true]'
+      REGISTRY_HTTP_HEADERS_Access-Control-Allow-Headers: '[Authorization,Accept,Cache-Control]'
+      REGISTRY_HTTP_HEADERS_Access-Control-Expose-Headers: '[Docker-Content-Digest]'
+      REGISTRY_STORAGE_DELETE_ENABLED: 'true'
+    volumes:
+      - ./registry/data:/var/lib/registry
+    ports:
+      - 5005:5000
+    container_name: local-registry
+
+  reg-docker.io:
+    image: registry:2
+    ports: 
+      - 5000:5000
+    environment:
+      - REGISTRY_PROXY_REMOTEURL=https://docker.io
+    restart: always
+    
+  reg-registry.k8s.io:
+    image: registry:2
+    ports: 
+      - 5001:5000
+    environment:
+      - REGISTRY_PROXY_REMOTEURL=https://registry.k8s.io
+    restart: always
+
+  reg-k8s.gcr.io:
+    image: registry:2
+    ports: 
+      - 5002:5000
+    environment:
+      - REGISTRY_PROXY_REMOTEURL=https://k8s.grc.io
+    restart: always
+    
+  reg-gcr.io:
+    image: registry:2
+    ports: 
+      - 5003:5000
+    environment:
+      - REGISTRY_PROXY_REMOTEURL=https://gcr.io
+    restart: always
+    
+  reg-ghcr.io:
+    image: registry:2
+    ports: 
+      - 5004:5000
+    environment:
+      - REGISTRY_PROXY_REMOTEURL=https://ghcr.io
+    restart: always
+
+
+  reg-quay.io:
+    image: registry:2
+    ports: 
+      - 5006:5000
+    environment:
+      - REGISTRY_PROXY_REMOTEURL=https://quay.io
+    restart: always
+
+  reg-factory.talos.dev:
+    image: registry:2
+    ports: 
+      - 5007:5000
+    environment:
+      - REGISTRY_PROXY_REMOTEURL=https://factory.talos.dev
+    restart: always
+    
+    
